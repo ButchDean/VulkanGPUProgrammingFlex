@@ -1,2 +1,2 @@
-bin_PROGRAMS = src/basic
-src_basic_SOURCES = src/basic.c
+bin_PROGRAMS = basic
+basic_SOURCES = src/basic.c
