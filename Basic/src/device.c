@@ -1,8 +1,57 @@
+#include <stdio.h>
+#include <string.h>
 #include <vulkan/vulkan.h>
 #include <device.h>
 
-void CreateDeviceAndComputeQueue() {
+extern VkPhysicalDevice PhysicalDevice;
 
+VkDevice LogicalDevice = VK_NULL_HANDLE;
+VkQueue ComputingQueue = VK_NULL_HANDLE;
+VkCommandPool ComputeCommandPool = VK_NULL_HANDLE;
+VkDescriptorPool DescriptorPool = VK_NULL_HANDLE;
+
+uint32_t ComputeQueueFamilyIndex;
+
+void CreateDeviceAndComputeQueue() {
+    VkQueueFamilyProperties families[100];
+    uint32_t count = 100;
+
+    vkGetPhysicalDeviceQueueFamilyProperties(PhysicalDevice, &count, families);
+
+    printf("Found %u queue families\n", count);
+
+    ComputeQueueFamilyIndex = 0;
+
+    while((ComputeQueueFamilyIndex < count) && (families[ComputeQueueFamilyIndex].queueFlags & VK_QUEUE_COMPUTE_BIT) == 0) {
+        ComputeQueueFamilyIndex++;
+    }
+
+    if(ComputeQueueFamilyIndex == count) {
+        perror("Compute queue not found\n");
+        return;
+    }
+
+    float prio = 1.0f;
+
+    VkDeviceQueueCreateInfo queueCreateInfo;
+    memset(&queueCreateInfo, 0, sizeof(queueCreateInfo));
+    queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+    queueCreateInfo.queueFamilyIndex = ComputeQueueFamilyIndex;
+    queueCreateInfo.queueCount = 1;
+    queueCreateInfo.pQueuePriorities = &prio;
+
+    VkDeviceCreateInfo deviceCreateInfo;
+    memset(&deviceCreateInfo, 0, sizeof(deviceCreateInfo));
+    deviceCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+    deviceCreateInfo.pQueueCreateInfos = &queueCreateInfo;
+    deviceCreateInfo.queueCreateInfoCount = 1;
+
+    if(vkCreateDevice(PhysicalDevice, &deviceCreateInfo, NULL, &LogicalDevice) != VK_SUCCESS) {
+        perror("Failed to create logical device\n");
+        return;
+    }
+
+    vkGetDeviceQueue(LogicalDevice, ComputeQueueFamilyIndex, 0, &ComputingQueue);
 }
 
 void CreatecommandPool() {

@@ -7,7 +7,7 @@ AC_CONFIG_MACRO_DIR([m4])
 
 AM_INIT_AUTOMAKE([foreign -Wall -Werror subdir-objects])
 
-AC_PROG_CC
+AC_PROG_CXX
 
 have_vulkan=no
 

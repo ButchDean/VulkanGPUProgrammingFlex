@@ -4,7 +4,7 @@
 #include <instance.h>
 
 static VkInstance Instance = VK_NULL_HANDLE;
-static VkPhysicalDevice PhysicalDevice = VK_NULL_HANDLE;
+VkPhysicalDevice PhysicalDevice = VK_NULL_HANDLE;
 
 void CreateInstance() {
     const char* layers[] = { "VK_LAYER_KHRONOS_validation" };
