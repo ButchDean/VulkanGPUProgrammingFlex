@@ -55,7 +55,14 @@ void CreateDeviceAndComputeQueue() {
 }
 
 void CreatecommandPool() {
+    VkCommandPoolCreateInfo poolCreateInfo;
+    memset(&poolCreateInfo, 0, sizeof(poolCreateInfo));
+    poolCreateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+    poolCreateInfo.queueFamilyIndex = ComputeQueueFamilyIndex;
 
+    if(vkCreateCommandPool(LogicalDevice, &poolCreateInfo, NULL, &ComputeCommandPool) != VK_SUCCESS) {
+        perror("Failed to create a command pool\n");
+    }
 }
 
 void CreateDescriptorPool() {
