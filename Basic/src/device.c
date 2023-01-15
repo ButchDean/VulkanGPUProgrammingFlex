@@ -66,5 +66,35 @@ void CreatecommandPool() {
 }
 
 void CreateDescriptorPool() {
+    VkDescriptorPoolSize descriptorPoolSize;
+    memset(&descriptorPoolSize, 0, sizeof(descriptorPoolSize));
+    descriptorPoolSize.type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+    descriptorPoolSize.descriptorCount = 2;
 
+    VkDescriptorPoolCreateInfo descriptorPoolCreateInfo;
+    memset(&descriptorPoolCreateInfo, 0, sizeof(descriptorPoolCreateInfo));
+    descriptorPoolCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+    descriptorPoolCreateInfo.maxSets = 1;
+    descriptorPoolCreateInfo.pPoolSizes = &descriptorPoolSize;
+    descriptorPoolCreateInfo.poolSizeCount =1;
+
+    if(vkCreateDescriptorPool(LogicalDevice, &descriptorPoolCreateInfo, NULL, &DescriptorPool) != VK_SUCCESS) {
+        perror("Failed to create the descriptor pool");
+    }
+}
+
+void DestroyCommandPoolAndLogicalDevice() {
+    if(ComputeCommandPool != VK_NULL_HANDLE) {
+        vkDestroyCommandPool(LogicalDevice, ComputeCommandPool, NULL);
+    }
+
+    if(DescriptorPool != VK_NULL_HANDLE) {
+        vkDestroyDescriptorPool(LogicalDevice, DescriptorPool, NULL);
+    }
+
+    DestroyBuffers();
+
+    if(LogicalDevice != VK_NULL_HANDLE) {
+        vkDestroyDevice(LogicalDevice, NULL);
+    }
 }
