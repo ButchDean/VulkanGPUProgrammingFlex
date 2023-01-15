@@ -2,6 +2,7 @@
 #include <string.h>
 #include <vulkan/vulkan.h>
 #include <device.h>
+#include <memory.h>
 
 extern VkPhysicalDevice PhysicalDevice;
 
