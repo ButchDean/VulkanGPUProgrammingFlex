@@ -114,3 +114,6 @@ Makefile
 ### Autotools Patch ###
 
 # End of https://www.toptal.com/developers/gitignore/api/autotools
+
+# Visual Studio Code
+.vscode
