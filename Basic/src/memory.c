@@ -9,7 +9,7 @@ extern VkPhysicalDevice PhysicalDevice;
 extern VkDevice LogicalDevice;
 extern VkDescriptorSet DescriptorSet;
 
-uint32_t FindMemoryIndexType(uint32_t allowedTypesMask, VkMemoryPropertyFlags flags) {
+uint32_t FindMemoryIndexByType(uint32_t allowedTypesMask, VkMemoryPropertyFlags flags) {
     VkPhysicalDeviceMemoryProperties memProperties;
     vkGetPhysicalDeviceMemoryProperties(PhysicalDevice, &memProperties);
 
@@ -45,6 +45,28 @@ VkBuffer CreateBufferAndMemory(uint32_t size, VkDeviceMemory* deviceMemory) {
 
     VkMemoryRequirements memoryRequirements;
     vkGetBufferMemoryRequirements(LogicalDevice, buffer, &memoryRequirements);
+
+    VkMemoryAllocateInfo memAllocInfo;
+    memset(&memAllocInfo, 0, sizeof(memAllocInfo));
+    memAllocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+    memAllocInfo.allocationSize = memoryRequirements.size;
+    memAllocInfo.memoryTypeIndex = FindMemoryIndexByType(memoryRequirements.memoryTypeBits,
+                                                    VK_MEMORY_PROPERTY_HOST_COHERENT_BIT |
+                                                    VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
+
+    if(vkAllocateMemory(LogicalDevice, &memAllocInfo, NULL, &memory) != VK_SUCCESS) {
+        perror("Failed to allocate memory for the buffer.\n");
+        vkDestroyBuffer(LogicalDevice, buffer, NULL);
+        return VK_NULL_HANDLE;
+    }
+
+    if(vkBindBufferMemory(LogicalDevice, buffer, memory, 0) != VK_SUCCESS) {
+        perror("Failed to bind buffer and memory.\n");
+    }
+
+    *deviceMemory = memory;
+
+    return buffer;
 }
 
 void CreateBuffers(uint32_t inputSize, uint32_t outputSize) {
